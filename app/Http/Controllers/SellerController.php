@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\DTrans;
+use App\Models\HTrans;
 use App\Models\Kategori;
 use App\Models\Review;
 use App\Models\Topup;
