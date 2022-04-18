@@ -134,6 +134,13 @@ class SellerController extends Controller
                                     ->join("barang", "barang.id", "=", "dtrans.fk_barang")
                                     ->where("dtrans.fk_seller", "=", $username)
                                     ->orderBy("htrans.tanggal", "asc")->get();
+
+        $htrans = HTrans::distinct()->select("htrans.id", "htrans.fk_customer",
+                                    "htrans.grandtotal", "htrans.tanggal")
+                                ->join("dtrans", "htrans.id", "=", "dtrans.fk_htrans")
+                                ->where("dtrans.fk_seller", "=", $username)
+                                ->orderBy("htrans.tanggal", "asc")->get();
+
         $databarang = [];
         if ($request->status != "All"){
             //$transaksi = DTrans::where("status", "=", strtolower($request->status))->get();
@@ -148,13 +155,18 @@ class SellerController extends Controller
                                     ->where("dtrans.fk_seller", "=", $username)
                                     ->where("status", "=", strtolower($request->status))
                                     ->orderBy("htrans.tanggal", "asc")->get();
+
+
         }
 
         foreach ($transaksi as $trans){
             $databarang[] = $trans->product;
         }
 
+        $response["datahtrans"] = $htrans;
         $response["datatrans"] = $transaksi;
+
+
 
         echo json_encode($response);
     }
