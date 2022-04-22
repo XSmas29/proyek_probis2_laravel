@@ -123,9 +123,13 @@ class SellerController extends Controller
     }
 
     public function getTransaksi(Request $request){
+        /*
+            Update Changes :
+            - 22 April 2022 : merubah dari menampilkan dtrans menjadi htrans
+        */
         $username = $request->username;
         //$transaksi = DTrans::all();
-        $transaksi = DTrans::select("dtrans.id", "dtrans.fk_htrans",
+        $transaksi = DTrans::distinct()->select("dtrans.id", "dtrans.fk_htrans",
                                         "dtrans.fk_barang", "dtrans.jumlah",
                                          "dtrans.subtotal", "dtrans.rating",
                                          "dtrans.review", "dtrans.fk_seller",
@@ -134,13 +138,13 @@ class SellerController extends Controller
                                     ->join("htrans", "htrans.id", "=", "dtrans.fk_htrans")
                                     ->join("barang", "barang.id", "=", "dtrans.fk_barang")
                                     ->where("dtrans.fk_seller", "=", $username)
-                                    ->orderBy("htrans.tanggal", "asc")->get();
+                                    ->orderBy("htrans.tanggal", "desc")->get();
 
         $htrans = HTrans::distinct()->select("htrans.id", "htrans.fk_customer",
                                     "htrans.grandtotal", "htrans.tanggal")
                                 ->join("dtrans", "htrans.id", "=", "dtrans.fk_htrans")
                                 ->where("dtrans.fk_seller", "=", $username)
-                                ->orderBy("htrans.tanggal", "asc")->get();
+                                ->orderBy("htrans.tanggal", "desc")->get();
 
         $databarang = [];
         if ($request->status != "All"){
@@ -155,8 +159,15 @@ class SellerController extends Controller
                                     ->join("barang", "barang.id", "=", "dtrans.fk_barang")
                                     ->where("dtrans.fk_seller", "=", $username)
                                     ->where("status", "=", strtolower($request->status))
-                                    ->orderBy("htrans.tanggal", "asc")->get();
+                                    ->orderBy("htrans.tanggal", "desc")->get();
 
+
+            $htrans = HTrans::distinct()->select("htrans.id", "htrans.fk_customer",
+                                        "htrans.grandtotal", "htrans.tanggal")
+                                    ->join("dtrans", "htrans.id", "=", "dtrans.fk_htrans")
+                                    ->where("dtrans.fk_seller", "=", $username)
+                                    ->where("dtrans.status", "=", strtolower($request->status))
+                                    ->orderBy("htrans.tanggal", "desc")->get();
 
         }
 
@@ -164,42 +175,86 @@ class SellerController extends Controller
             $databarang[] = $trans->product;
         }
 
-        $response["datahtrans"] = $htrans;
         $response["datatrans"] = $transaksi;
-
+        $response["datahtrans"] = $htrans;
 
 
         echo json_encode($response);
     }
 
     public function updateTransaksi(Request $request){
-        $detail = DTrans::find($request->id);
-        $detail->status = $request->status;
+        /*
 
-        if ($request->status == "rejected"){
-            $buyer = User::findOrFail($detail->header->fk_customer);
-            $buyer->saldo += $detail->subtotal;
-            $detail->save();
-            $buyer->save();
+            Update Changes :
+            - 22 April 2022 : berubah dari yg hanya mengubah satu dtrans, menjadi bisa banyak dtrans
 
-            $response["code"] = $buyer->saldo;
-        }
-        else if ($request->status == "processing"){
-            $barang = Barang::find($detail->fk_barang);
-            if ($barang->stok >= $detail->jumlah){
-                $barang->stok -= $detail->jumlah;
-                $detail->save();
-                $response["code"] = 2;
+
+        */
+
+        $detail = json_decode($request->detail);
+        //dd($detail);
+
+        foreach ($detail as $d) {
+            $dtrans = DTrans::find($d->id);
+            $dtrans->status = $request->status;
+
+            if ($request->status == "rejected"){
+                $buyer = User::findOrFail($dtrans->header->fk_customer);
+                $buyer->saldo += $dtrans->subtotal;
+                $dtrans->save();
+                $buyer->save();
+                $response["code"] = $buyer->saldo;
             }
-            else{
-                $response["code"] = -1;
+            else if ($request->status == "processing"){
+                $barang = Barang::find($dtrans->fk_barang);
+                if ($barang->stok >= $dtrans->jumlah){
+                    $barang->stok -= $dtrans->jumlah;
+                    $dtrans->save();
+                    $response["code"] = 2;
+                }
+                else{
+                    $response["code"] = -1;
+                }
             }
+            else if ($request->status == "sent"){
+                $dtrans->notes_seller = $d->notes_seller;
+                $dtrans->save();
+                $response["code"] = 3;
+            }
+
         }
-        else if ($request->status == "sent"){
-            $detail->notes_seller = $request->noteseller;
-            $detail->save();
-            $response["code"] = 3;
-        }
+
+        //$response["data"] = $detail;
+
+
+
+        // $detail = DTrans::find($request->id);
+        // $detail->status = $request->status;
+
+        // if ($request->status == "rejected"){
+        //     $buyer = User::findOrFail($detail->header->fk_customer);
+        //     $buyer->saldo += $detail->subtotal;
+        //     $detail->save();
+        //     $buyer->save();
+        //     $response["code"] = $buyer->saldo;
+        // }
+        // else if ($request->status == "processing"){
+        //     $barang = Barang::find($detail->fk_barang);
+        //     if ($barang->stok >= $detail->jumlah){
+        //         $barang->stok -= $detail->jumlah;
+        //         $detail->save();
+        //         $response["code"] = 2;
+        //     }
+        //     else{
+        //         $response["code"] = -1;
+        //     }
+        // }
+        // else if ($request->status == "sent"){
+        //     $detail->notes_seller = $request->noteseller;
+        //     $detail->save();
+        //     $response["code"] = 3;
+        // }
+
 
         echo json_encode($response);
     }
