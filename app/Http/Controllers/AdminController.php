@@ -250,13 +250,16 @@ class AdminController extends Controller
 
             if ($result) {
                 if ($status_topup == 1) {
-                    $queryuser = User::find($querytopup->fk_username);
-                    $queryuser->saldo = $queryuser->saldo - $querytopup->jumlah_topup;
-                    $result = $result + $queryuser->save();
+                    // $queryuser = User::find($querytopup->fk_username);
+                    // $queryuser->saldo = $queryuser->saldo - $querytopup->jumlah_topup;
+                    // $result = $result + $queryuser->save();
 
 
                     $response["message"] = "Berhasil konfirmasi withdraw!";
                 }else{
+                    $queryuser = User::find($querytopup->fk_username);
+                    $queryuser->saldo = $queryuser->saldo + $querytopup->jumlah_topup;
+                    $result = $result + $queryuser->save();
 
                     $response["message"] = "Berhasil reject withdraw!";
                 }
