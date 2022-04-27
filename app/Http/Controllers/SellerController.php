@@ -372,4 +372,120 @@ class SellerController extends Controller
 
         echo json_encode($response);
     }
+
+    public function getDataPendapatan(Request $request){
+        /*
+
+            created at : 28 April 2022 untuk menampilkan data pendapatan seller
+
+        */
+
+        $username = $request->username;
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+
+        //$transaksi = DTrans::all();
+        $transaksi = DTrans::distinct()->select("dtrans.id", "dtrans.fk_htrans",
+                                        "dtrans.fk_barang", "dtrans.jumlah",
+                                         "dtrans.subtotal", "dtrans.rating",
+                                         "dtrans.review", "dtrans.fk_seller",
+                                         "dtrans.status", "dtrans.notes_seller",
+                                         "dtrans.notes_customer")
+                                    ->join("htrans", "htrans.id", "=", "dtrans.fk_htrans")
+                                    ->join("barang", "barang.id", "=", "dtrans.fk_barang")
+                                    ->where("dtrans.fk_seller", "=", $username)
+                                    ->orderBy("htrans.tanggal", "desc")->get();
+
+        $htrans = HTrans::distinct()->select("htrans.id", "htrans.fk_customer",
+                                    "htrans.grandtotal", "htrans.tanggal")
+                                ->join("dtrans", "htrans.id", "=", "dtrans.fk_htrans")
+                                ->where("dtrans.fk_seller", "=", $username)
+                                ->orderBy("htrans.tanggal", "desc")->get();
+
+        if ($bulan != 0 && $tahun != "-- Pilih Tahun --"){
+            $tgl = $tahun . "-" . $bulan;
+            $transaksi = DTrans::distinct()->select("dtrans.id", "dtrans.fk_htrans",
+                                            "dtrans.fk_barang", "dtrans.jumlah",
+                                            "dtrans.subtotal", "dtrans.rating",
+                                            "dtrans.review", "dtrans.fk_seller",
+                                            "dtrans.status", "dtrans.notes_seller",
+                                            "dtrans.notes_customer")
+                                        ->join("htrans", "htrans.id", "=", "dtrans.fk_htrans")
+                                        ->join("barang", "barang.id", "=", "dtrans.fk_barang")
+                                        ->where("dtrans.fk_seller", "=", $username)
+                                        ->whereYear("htrans.tanggal", "=", $tahun)
+                                        ->whereMonth("htrans.tanggal", "=", $bulan)
+                                        ->orderBy("htrans.tanggal", "desc")->get();
+
+            $htrans = HTrans::distinct()->select("htrans.id", "htrans.fk_customer",
+                                            "htrans.grandtotal", "htrans.tanggal")
+                                        ->join("dtrans", "htrans.id", "=", "dtrans.fk_htrans")
+                                        ->where("dtrans.fk_seller", "=", $username)
+                                        ->whereYear("htrans.tanggal", "=", $tahun)
+                                        ->whereMonth("htrans.tanggal", "=", $bulan)
+                                        ->orderBy("htrans.tanggal", "desc")->get();
+        }
+
+        $databarang = [];
+        if ($request->status != "All"){
+            //$transaksi = DTrans::where("status", "=", strtolower($request->status))->get();
+            $transaksi = DTrans::select("dtrans.id", "dtrans.fk_htrans",
+                                            "dtrans.fk_barang", "dtrans.jumlah",
+                                            "dtrans.subtotal", "dtrans.rating",
+                                            "dtrans.review", "dtrans.fk_seller",
+                                            "dtrans.status", "dtrans.notes_seller",
+                                                                "dtrans.notes_customer")
+                                    ->join("htrans", "htrans.id", "=", "dtrans.fk_htrans")
+                                    ->join("barang", "barang.id", "=", "dtrans.fk_barang")
+                                    ->where("dtrans.fk_seller", "=", $username)
+                                    ->where("status", "=", strtolower($request->status))
+                                    ->orderBy("htrans.tanggal", "desc")->get();
+
+
+            $htrans = HTrans::distinct()->select("htrans.id", "htrans.fk_customer",
+                                        "htrans.grandtotal", "htrans.tanggal")
+                                    ->join("dtrans", "htrans.id", "=", "dtrans.fk_htrans")
+                                    ->where("dtrans.fk_seller", "=", $username)
+                                    ->where("dtrans.status", "=", strtolower($request->status))
+                                    ->orderBy("htrans.tanggal", "desc")->get();
+
+
+            if ($bulan != 0 && $tahun != "-- Pilih Tahun --"){
+                $tgl = $tahun . "-" . $bulan;
+                $transaksi = DTrans::distinct()->select("dtrans.id", "dtrans.fk_htrans",
+                                                "dtrans.fk_barang", "dtrans.jumlah",
+                                                "dtrans.subtotal", "dtrans.rating",
+                                                "dtrans.review", "dtrans.fk_seller",
+                                                "dtrans.status", "dtrans.notes_seller",
+                                                "dtrans.notes_customer")
+                                            ->join("htrans", "htrans.id", "=", "dtrans.fk_htrans")
+                                            ->join("barang", "barang.id", "=", "dtrans.fk_barang")
+                                            ->where("dtrans.fk_seller", "=", $username)
+                                            ->whereYear("htrans.tanggal", "=", $tahun)
+                                            ->whereMonth("htrans.tanggal", "=", $bulan)
+                                            ->where("status", "=", strtolower($request->status))
+                                            ->orderBy("htrans.tanggal", "desc")->get();
+
+                $htrans = HTrans::distinct()->select("htrans.id", "htrans.fk_customer",
+                                                "htrans.grandtotal", "htrans.tanggal")
+                                            ->join("dtrans", "htrans.id", "=", "dtrans.fk_htrans")
+                                            ->where("dtrans.fk_seller", "=", $username)
+                                            ->whereYear("htrans.tanggal", "=", $tahun)
+                                            ->whereMonth("htrans.tanggal", "=", $bulan)
+                                            ->where("dtrans.status", "=", strtolower($request->status))
+                                            ->orderBy("htrans.tanggal", "desc")->get();
+            }
+
+        }
+
+        // foreach ($transaksi as $trans){
+        //     $databarang[] = $trans->product;
+        // }
+
+        $response["datatrans"] = $transaksi;
+        $response["datahtrans"] = $htrans;
+
+
+        echo json_encode($response);
+    }
 }

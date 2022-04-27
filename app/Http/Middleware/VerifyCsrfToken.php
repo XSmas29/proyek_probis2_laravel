@@ -21,7 +21,7 @@ class VerifyCsrfToken extends Middleware
         , 'customer/getuserdata', 'customer/updateprofile', 'customer/getdtrans'
         , 'seller/listproduk', 'seller/getkategori', 'seller/addproduk', 'seller/editproduk'
         , 'seller/getsaldo', 'seller/cairkansaldo', 'seller/gettransaksi', 'seller/updatetransaksi'
-        , 'seller/getreview', 'seller/updateprofile', 'seller/getdata'
+        , 'seller/getreview', 'seller/updateprofile', 'seller/getdata', 'seller/getdatapendapatan'
         , 'admin/getusersdata', 'admin/updateprofile', 'admin/gettopupdata', 'admin/getonetopupdata'
         , 'admin/statustopupchange', 'admin/getwithdrawdata', 'admin/getonewithdrawdata'
         , 'admin/statuswithdrawchange', 'admin/getdata'
