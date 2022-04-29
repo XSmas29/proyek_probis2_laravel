@@ -113,6 +113,14 @@ class SellerController extends Controller
             $topup->status_topup = 0;
             $topup->save();
 
+            //add ke tabel mutasi
+            $mutasi = new Mutasi();
+            $mutasi->fk_user = $topup->fk_username;
+            $mutasi->jumlah = $topup->jumlah_topup * -1;
+            $mutasi->tanggal = date("Y-m-d h:i:s");
+            $mutasi->keterangan = "withdraw #".$topup->id;
+            $mutasi->save();
+
             $response["code"] = 1;
         }
         else{
@@ -193,6 +201,10 @@ class SellerController extends Controller
 
         $detail = json_decode($request->detail);
         //dd($detail);
+        $addmutasi = false;
+        $buyer = "";
+        $dtrans = "";
+        $subtotal = 0;
 
         foreach ($detail as $d) {
             $dtrans = DTrans::find($d->id);
@@ -203,7 +215,9 @@ class SellerController extends Controller
                 $buyer->saldo += $dtrans->subtotal;
                 $dtrans->save();
                 $buyer->save();
-                $response["code"] = $buyer->saldo;
+                $response["code"] = 1;
+                $subtotal += $dtrans->subtotal;
+                $addmutasi = true;
             }
             else if ($request->status == "processing"){
                 $barang = Barang::find($dtrans->fk_barang);
@@ -221,7 +235,16 @@ class SellerController extends Controller
                 $dtrans->save();
                 $response["code"] = 3;
             }
+        }
 
+        if ($addmutasi == true){
+            //add ke tabel mutasi
+            $mutasi = new Mutasi();
+            $mutasi->fk_user = $buyer->username;
+            $mutasi->jumlah = $subtotal;
+            $mutasi->tanggal = date("Y-m-d h:i:s");
+            $mutasi->keterangan = "transaksi #".$dtrans->fk_htrans." rejected";
+            $mutasi->save();
         }
 
         //$response["data"] = $detail;

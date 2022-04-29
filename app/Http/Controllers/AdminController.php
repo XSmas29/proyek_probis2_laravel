@@ -216,7 +216,7 @@ class AdminController extends Controller
                 $mutasi->fk_user = $queryuser->username;
                 $mutasi->jumlah = $querytopup->jumlah_topup;
                 $mutasi->tanggal = date("Y-m-d h:i:s");
-                $mutasi->keterangan = "topup saldo";
+                $mutasi->keterangan = "topup saldo #".$querytopup->id;
                 $mutasi->save();
 
                 $response["message"] = "Berhasil konfirmasi top up!";

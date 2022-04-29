@@ -371,6 +371,15 @@ class CustomerController extends Controller
             $seller = User::findOrFail($querydtrans->fk_seller);
             $seller->saldo += $querydtrans->subtotal;
             $seller->save();
+
+            //add ke tabel mutasi
+            $mutasi = new Mutasi();
+            $mutasi->fk_user =$querydtrans->fk_seller;
+            $mutasi->jumlah = $querydtrans->subtotal;
+            $mutasi->tanggal = date("Y-m-d h:i:s");
+            $mutasi->keterangan = "transaksi #".$querydtrans->fk_htrans."/".$querydtrans->id." completed";
+            $mutasi->save();
+
             $response["code"] = 1;
             $response["message"] = "Berhasil complete order!";
         }else{
