@@ -24,6 +24,6 @@ class VerifyCsrfToken extends Middleware
         , 'seller/getreview', 'seller/updateprofile', 'seller/getdata', 'seller/getdatapendapatan'
         , 'admin/getusersdata', 'admin/updateprofile', 'admin/gettopupdata', 'admin/getonetopupdata'
         , 'admin/statustopupchange', 'admin/getwithdrawdata', 'admin/getonewithdrawdata'
-        , 'admin/statuswithdrawchange', 'admin/getdata'
+        , 'admin/statuswithdrawchange', 'admin/getdata', 'customer/getmutasisaldo'
     ];
 }

@@ -676,4 +676,10 @@ class CustomerController extends Controller
 
         echo json_encode($response);
     }
+
+    public function getMutasiSaldo(Request $request){
+        $mutasi = Mutasi::where("fk_user", "=", $request->username)->get();
+        $response["datamutasi"] = $mutasi;
+        echo json_encode($response);
+    }
 }

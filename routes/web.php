@@ -49,6 +49,7 @@ Route::prefix("/customer")->group(function(){
     Route::post('/getuserdata', [CustomerController::class, 'getuserdata']);
     Route::post('/updateprofile', [CustomerController::class, 'updateprofile']);
     Route::post('/getdtrans', [CustomerController::class, 'getDTransaksi']);
+    Route::post('/getmutasisaldo', [CustomerController::class, 'getMutasiSaldo']);
 });
 
 //bagian seller
