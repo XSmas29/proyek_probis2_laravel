@@ -320,11 +320,23 @@ class CustomerController extends Controller
 
             - 15 April : digunakan kembali
         */
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
         $username = $request->username;
 
         $queryhtrans = HTrans::where("fk_customer", "=", $username)
-                    ->orderBy("id", "desc")->get();
+                    ->orderBy("id", "desc");
+        if ($bulan != null){
+            $queryhtrans = $queryhtrans->whereMonth("htrans.tanggal", "=", $bulan);
+        }
+        if ($tahun != null){
+            $queryhtrans = $queryhtrans->whereYear("htrans.tanggal", "=", $tahun);
+        }
+
+        $queryhtrans = $queryhtrans->get();
+
         $response["datahtrans"] = $queryhtrans;
+        $response["cek"] = $bulan." - ".$tahun;
 
 
         echo json_encode($response);
