@@ -66,6 +66,7 @@ Route::prefix("/seller")->group(function(){
     Route::post('/updateprofile', [SellerController::class, 'updateprofile']);
     Route::post('/getdata', [SellerController::class, 'getdata']);
     Route::post('/getdatapendapatan', [SellerController::class, 'getdatapendapatan']);
+    Route::post('/getkategoripalinglaku', [SellerController::class, 'getKategoriPalingLaku']);
 });
 
 Route::prefix("/admin")->group(function(){

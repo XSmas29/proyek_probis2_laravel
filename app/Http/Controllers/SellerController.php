@@ -511,4 +511,29 @@ class SellerController extends Controller
 
         echo json_encode($response);
     }
+
+    public function getKategoriPalingLaku(Request $request){
+        $username = $request->username;
+
+        // mendapatkan kategori
+        $kategori = Kategori::all();
+        $response["datakategori"] = $kategori;
+
+        // mendapatkan data barang yg dimiliki seller
+        $barang = Barang::where("fk_seller", "=", $username)->get();
+        $response["dataproduct"] = $barang;
+
+        //mendapatkan dtrans dari transaksi seller
+        $dtrans = DTrans::where("fk_seller", "=", $username)->get();
+        $response["datadtrans"] = $dtrans;
+
+        if($kategori && $barang && $dtrans){
+            $response["code"] = 1;
+            $response["message"] = "berhasil mendapatkan data";
+        }else{
+            $response["code"] = -1;
+            $response["message"] = "gagal mendapatkan data";
+        }
+        echo json_encode($response);
+    }
 }

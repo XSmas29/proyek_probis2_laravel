@@ -19,11 +19,13 @@ class VerifyCsrfToken extends Middleware
         , 'customer/gettransdata', 'customer/completeorder', 'customer/sendreview'
         , 'customer/getwishlist', 'customer/getjumlahsaldo', 'customer/tambahsaldo'
         , 'customer/getuserdata', 'customer/updateprofile', 'customer/getdtrans'
+        , 'customer/getmutasisaldo'
         , 'seller/listproduk', 'seller/getkategori', 'seller/addproduk', 'seller/editproduk'
         , 'seller/getsaldo', 'seller/cairkansaldo', 'seller/gettransaksi', 'seller/updatetransaksi'
         , 'seller/getreview', 'seller/updateprofile', 'seller/getdata', 'seller/getdatapendapatan'
+        , 'seller/getkategoripalinglaku'
         , 'admin/getusersdata', 'admin/updateprofile', 'admin/gettopupdata', 'admin/getonetopupdata'
         , 'admin/statustopupchange', 'admin/getwithdrawdata', 'admin/getonewithdrawdata'
-        , 'admin/statuswithdrawchange', 'admin/getdata', 'customer/getmutasisaldo'
+        , 'admin/statuswithdrawchange', 'admin/getdata'
     ];
 }
